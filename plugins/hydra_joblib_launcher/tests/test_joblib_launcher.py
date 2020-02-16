@@ -15,12 +15,12 @@ from hydra.test_utils.launcher_common_tests import (
 from hydra.test_utils.test_utils import sweep_runner  # noqa: F401
 from hydra_plugins.hydra_joblib_launcher import JoblibLauncher
 
-windows_reason = (
-    "Windows is unsupported, due to issues with Joblib (related Joblib issue: #964)"
+windows_reason = "Windows is unsupported, due to stability issues with JobLib"
+
+
+@pytest.mark.skipif(  # type: ignore
+    sys.platform.startswith("win"), reason=windows_reason
 )
-
-
-@pytest.mark.skipif(sys.platform.startswith("win"), reason=windows_reason)  # type: ignore
 def test_discovery() -> None:
     # Tests that this plugin can be discovered via the plugins subsystem when looking for Launchers
     assert JoblibLauncher.__name__ in [x.__name__ for x in Plugins.discover(Launcher)]
@@ -48,11 +48,11 @@ class TestJoblibLauncher(LauncherTestSuite):
                     {"hydra/launcher": "joblib"},
                     {"hydra/hydra_logging": "hydra_debug"},
                     {"hydra/job_logging": "disabled"},
-                ],
+                ]
             },
             ["-m"],
             "hydra_plugins.joblib_launcher",
-        ),
+        )
     ],
 )
 class TestJoblibLauncherIntegration(IntegrationTestSuite):
